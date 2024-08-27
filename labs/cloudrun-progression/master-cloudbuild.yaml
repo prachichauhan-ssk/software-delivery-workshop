@@ -14,7 +14,7 @@
 
 # Default Values
 substitutions:
-  _SERVICE_NAME: hello-cloudrun 
+  _SERVICE_NAME: hello-cloudrun
   _REGION: us-central1
 
 steps:
@@ -33,7 +33,7 @@ steps:
   - id: "deploy canary service"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
-    args: 
+    args:
       - '-c'
       - |
           gcloud run deploy ${_SERVICE_NAME} \
@@ -42,13 +42,13 @@ steps:
             --image gcr.io/${PROJECT_ID}/${_SERVICE_NAME} \
             --tag=canary \
             --no-traffic
-  
+
 
   # Route Traffic
   - id: "route prod traffic"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
-    args: 
+    args:
       - '-c'
       - |
           apt-get install -y jq
@@ -60,3 +60,6 @@ steps:
           echo gcloud beta run services update-traffic  ${_SERVICE_NAME} --update-tags=sha-$SHORT_SHA=$${CANARY}  --platform managed  --region ${_REGION}
           gcloud beta run services update-traffic  ${_SERVICE_NAME} --update-tags=sha-$SHORT_SHA=$${CANARY}  --platform managed  --region ${_REGION}
           gcloud run services update-traffic  ${_SERVICE_NAME} --to-revisions=$${PROD}=90,$${CANARY}=10  --platform managed  --region ${_REGION}
+
+options:
+  logging: CLOUD_LOGGING_ONLY
