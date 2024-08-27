@@ -14,7 +14,7 @@
 
 # Default Values
 substitutions:
-  _SERVICE_NAME: hello-cloudrun 
+  _SERVICE_NAME: hello-cloudrun
   _REGION: us-central1
 
 steps:
@@ -22,7 +22,7 @@ steps:
 ### Build
   - id: "build image"
     name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "labs/cloudrun-progression"]
+    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "."]
 
 ### Push
   - id: "push image"
@@ -33,7 +33,7 @@ steps:
   - id: "deploy prod service"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
-    args: 
+    args:
       - '-c'
       - |
           gcloud run deploy ${_SERVICE_NAME} \
@@ -42,6 +42,6 @@ steps:
             --image gcr.io/${PROJECT_ID}/${_SERVICE_NAME} \
             --tag=${BRANCH_NAME} \
             --no-traffic
-      
 
-  
+options:
+  logging: CLOUD_LOGGING_ONLY
